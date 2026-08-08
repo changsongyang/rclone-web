@@ -11,7 +11,13 @@
         ],
         "ignoreUnknown": true
     },
-    "assist": { "actions": { "source": { "organizeImports": "on" } } },
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
     "linter": {
         "enabled": true,
         "rules": {
@@ -28,7 +34,11 @@
                 "noExcessiveCognitiveComplexity": "off"
             },
             "correctness": {
-                "useImportExtensions": "off"
+                "useImportExtensions": "off",
+                "noUnusedImports": {
+                    "level": "warn",
+                    "fix": "safe"
+                }
             },
             "performance": {},
             "security": {},
@@ -46,7 +56,10 @@
                 "noExplicitAny": "off"
             }
         },
-        "includes": ["!**/*.js"]
+        "includes": [
+            "**",
+            "!**/*.js"
+        ]
     },
     "formatter": {
         "enabled": true,
@@ -68,6 +81,11 @@
             "trailingCommas": "es5",
             "semicolons": "asNeeded"
         },
-        "globals": ["it", "describe", "expect", "test"]
+        "globals": [
+            "it",
+            "describe",
+            "expect",
+            "test"
+        ]
     }
 }
