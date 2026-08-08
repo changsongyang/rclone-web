@@ -153,7 +153,7 @@ export function LoginPage() {
 
     const reasonMessage = useMemo(() => {
         return loginSearchState.reason === 'auth' ? t('login.sessionExpired') : ''
-    }, [loginSearchState.reason])
+    }, [loginSearchState.reason, t])
 
     return (
         <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-background px-4">

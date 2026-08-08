@@ -693,7 +693,7 @@ export function RemotesDetailsPage() {
         if (!name?.trim()) return
         const folderPath = [currentPath, name.trim()].filter(Boolean).join('/')
         mkdirMutation.mutate({ fs: currentFs, path: folderPath })
-    }, [currentPath, currentFs])
+    }, [currentPath, currentFs, mkdirMutation.mutate, t])
 
     const handleRename = useCallback(
         (item: ListItem) => {
@@ -703,7 +703,7 @@ export function RemotesDetailsPage() {
             const newPath = [currentPath, newName.trim()].filter(Boolean).join('/')
             renameMutation.mutate({ fs: currentFs, oldPath, newPath, isDir: item.IsDir })
         },
-        [currentPath, currentFs]
+        [currentPath, currentFs, renameMutation.mutate, t]
     )
 
     const handleDelete = useCallback(
@@ -717,7 +717,7 @@ export function RemotesDetailsPage() {
             const itemPath = [currentPath, item.Name].filter(Boolean).join('/')
             deleteMutation.mutate({ fs: currentFs, path: itemPath, isDir: item.IsDir })
         },
-        [currentPath, currentFs]
+        [currentPath, currentFs, deleteMutation.mutate, t]
     )
 
     const handleDownload = useCallback(
@@ -730,7 +730,7 @@ export function RemotesDetailsPage() {
                 isDir: item.IsDir,
             })
         },
-        [currentPath, currentFs]
+        [currentPath, currentFs, downloadMutation.mutate]
     )
 
     const handleTransfer = useCallback(
@@ -803,12 +803,20 @@ export function RemotesDetailsPage() {
                 }
             )
         },
-        [transferSource, currentFs, currentPath, navigate]
+        [
+            transferSource,
+            currentFs,
+            currentPath,
+            navigate,
+            queryClient.invalidateQueries,
+            transferMutation.mutate,
+            t,
+        ]
     )
 
     const handleUpload = useCallback(() => {
         fileInputRef.current?.click()
-    }, [fileInputRef])
+    }, [])
 
     const handleFileChange = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {

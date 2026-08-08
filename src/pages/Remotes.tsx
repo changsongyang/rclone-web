@@ -69,7 +69,9 @@ export function RemotesPage() {
 
     const usageByName = useMemo(() => {
         const map = new Map<string, (typeof usageQueries)[number]>()
-        remotes.forEach((remote, i) => map.set(remote.name, usageQueries[i]))
+        remotes.forEach((remote, i) => {
+            map.set(remote.name, usageQueries[i])
+        })
         return map
     }, [remotes, usageQueries])
 

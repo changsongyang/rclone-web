@@ -78,7 +78,7 @@ export function App() {
         const shouldUpdate = window.confirm(t('app.updateConfirm'))
         if (!shouldUpdate) return
         updateMutation.mutate()
-    }, [updateMutation])
+    }, [updateMutation, t])
 
     const longPressTimerRef = useRef<number | null>(null)
     const longPressFiredRef = useRef(false)
@@ -129,6 +129,7 @@ export function App() {
         <div className="flex h-dvh min-h-screen flex-col overflow-hidden overscroll-none bg-background text-foreground">
             <header className="sticky top-0 z-10 border-b bg-background/95">
                 <div className="mx-auto flex items-center gap-4 px-4 py-4 sm:px-6">
+                    {/* biome-ignore lint/a11y/noStaticElementInteractions: logo shortcut to settings; settings remain reachable via normal navigation. TODO: promote to a real button. */}
                     <img
                         alt=""
                         className="size-6 select-none"

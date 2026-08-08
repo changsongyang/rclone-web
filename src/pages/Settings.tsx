@@ -159,6 +159,7 @@ export function SettingsPage() {
         coreVersionQuery.error,
         coreVersionQuery.isError,
         coreVersionQuery.isPending,
+        t,
     ])
 
     // Config file

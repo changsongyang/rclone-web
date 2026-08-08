@@ -51,6 +51,7 @@ function BreadcrumbLink({ className, render, ...props }: useRender.ComponentProp
 
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
     return (
+        // biome-ignore lint/a11y/useFocusableInteractive: upstream shadcn markup; the current page is an intentionally non-focusable aria-disabled link.
         <span
             data-slot="breadcrumb-page"
             role="link"

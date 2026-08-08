@@ -56,10 +56,7 @@
                 "noExplicitAny": "off"
             }
         },
-        "includes": [
-            "**",
-            "!**/*.js"
-        ]
+        "includes": ["**", "!**/*.js"]
     },
     "formatter": {
         "enabled": true,
@@ -81,11 +78,6 @@
             "trailingCommas": "es5",
             "semicolons": "asNeeded"
         },
-        "globals": [
-            "it",
-            "describe",
-            "expect",
-            "test"
-        ]
+        "globals": ["it", "describe", "expect", "test"]
     }
 }
