@@ -2,14 +2,16 @@ import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
     ActivityIcon,
     AlertTriangleIcon,
+    ArrowUpRightIcon,
     CheckCircle2Icon,
     CloudIcon,
     ExternalLinkIcon,
     GlobeIcon,
     HardDriveIcon,
     type LucideIcon,
+    XIcon,
 } from 'lucide-react'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Changelog } from '@/components/Changelog'
 import { toRecord } from '@/components/OptionField'
 import { PageContent } from '@/components/PageContent'
@@ -22,16 +24,24 @@ import { Spinner } from '@/components/ui/spinner'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { formatBytes, formatDuration, formatTime } from '@/lib/format'
 import { type TranslationKey, t as tStandalone, useT } from '@/lib/i18n'
+import { useStore } from '@/lib/store'
 import { cn } from '@/lib/ui'
 import rclone from '@/rclone/client'
 import { fetchJobsSnapshot, type JobRow } from '@/rclone/jobs'
 import { fetchRemotesList, fetchRemoteUsage, type RemoteWithUsage } from '@/rclone/usage'
 import { getRemoteName, getServeAuthLabel } from '@/rclone/utils'
 
-const LINKS: readonly { key: TranslationKey; href: string }[] = [
+const DISCORD_URL = 'https://discord.gg/rclone'
+
+const LINKS: readonly {
+    key: TranslationKey
+    href: string
+    icon?: React.ComponentType<{ className?: string }>
+    accent?: boolean
+}[] = [
     { key: 'dashboard.linkDocs', href: 'https://rclone.org/docs/' },
     { key: 'dashboard.linkForum', href: 'https://forum.rclone.org/' },
-    { key: 'dashboard.linkDiscord', href: 'https://discord.gg/rclone' },
+    { key: 'dashboard.linkDiscord', href: DISCORD_URL, icon: DiscordIcon, accent: true },
     { key: 'dashboard.linkBusiness', href: 'https://rclone.com/' },
 ]
 
@@ -183,6 +193,8 @@ export function DashboardPage() {
 
             <PageContent>
                 <div className="space-y-6">
+                    <DiscordBanner />
+
                     {sponsor?.type === 'banner' ? (
                         <a
                             href={sponsor.link}
@@ -390,18 +402,7 @@ export function DashboardPage() {
                                         </p>
 
                                         {LINKS.map((link) => (
-                                            <a
-                                                key={link.href}
-                                                href={link.href}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="flex items-center justify-between gap-4 p-3 transition-colors border rounded-lg hover:bg-muted"
-                                            >
-                                                <span className="text-sm text-muted-foreground">
-                                                    {t(link.key)}
-                                                </span>
-                                                <ExternalLinkIcon className="size-3.5 text-muted-foreground" />
-                                            </a>
+                                            <DashboardLink key={link.href} link={link} />
                                         ))}
                                     </div>
                                 ) : (
@@ -431,18 +432,7 @@ export function DashboardPage() {
                                             </span>
                                         </div>
                                         {LINKS.map((link) => (
-                                            <a
-                                                key={link.href}
-                                                href={link.href}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="flex items-center justify-between gap-4 p-3 transition-colors border rounded-lg hover:bg-muted"
-                                            >
-                                                <span className="text-sm text-muted-foreground">
-                                                    {t(link.key)}
-                                                </span>
-                                                <ExternalLinkIcon className="size-3.5 text-muted-foreground" />
-                                            </a>
+                                            <DashboardLink key={link.href} link={link} />
                                         ))}
                                     </div>
                                 )}
@@ -464,6 +454,85 @@ type ServeSummary = {
     remoteName: string
     source: string
     auth: 'none' | 'key' | 'basic' | 'proxy'
+}
+
+function DashboardLink({ link }: { link: (typeof LINKS)[number] }) {
+    const t = useT()
+    // Read once on mount so dismissing the banner doesn't recolor this link underneath
+    // the user — the accent shows up the next time the dashboard is opened.
+    const [bannerDismissed] = useState(() => useStore.getState().bannerDismissed)
+    const accent = link.accent && bannerDismissed
+    const Icon = link.icon ?? ExternalLinkIcon
+
+    return (
+        <a
+            href={link.href}
+            target="_blank"
+            rel="noreferrer"
+            className={cn(
+                'flex items-center justify-between gap-4 p-3 transition-colors border rounded-lg hover:bg-muted',
+                accent &&
+                    'border-0 bg-purple-600 hover:bg-purple-600/90 dark:bg-purple-700 dark:hover:bg-purple-700/90'
+            )}
+        >
+            <span className={cn('text-sm text-muted-foreground', accent && 'text-white')}>
+                {t(link.key)}
+            </span>
+            <Icon
+                className={cn(
+                    'size-3.5 shrink-0 text-muted-foreground',
+                    link.icon && 'size-4',
+                    accent && 'text-white/75'
+                )}
+            />
+        </a>
+    )
+}
+
+function DiscordBanner() {
+    const t = useT()
+    // useStore((state) => state.bannerDismissed)
+    const dismissed = true
+
+    if (dismissed) {
+        return null
+    }
+
+    return (
+        <div className="relative overflow-hidden rounded-xl bg-linear-to-r from-violet-600 to-purple-600 text-white dark:from-violet-700 dark:to-purple-700">
+            <a
+                href={DISCORD_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="flex cursor-default items-center gap-3 py-3.5 pr-12 pl-4 transition-colors "
+            >
+                <DiscordIcon className="size-5 shrink-0" />
+
+                <p className="flex min-w-0 items-center gap-1 text-sm font-medium">
+                    {t('dashboard.discordBanner')}
+                    <ArrowUpRightIcon className="size-4 shrink-0" />
+                </p>
+            </a>
+
+            <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t('common.dismiss')}
+                onClick={() => useStore.setState({ bannerDismissed: true })}
+                className="absolute top-1/2 right-2 -translate-y-1/2 text-white/75 hover:bg-white/15 hover:text-white dark:hover:bg-white/15"
+            >
+                <XIcon />
+            </Button>
+        </div>
+    )
+}
+
+function DiscordIcon({ className }: { className?: string }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.198.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
+        </svg>
+    )
 }
 
 function DashboardMetricCard({

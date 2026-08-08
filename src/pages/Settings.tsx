@@ -7,6 +7,7 @@ import {
     GaugeIcon,
     InfoIcon,
     LayersIcon,
+    LightbulbIcon,
     MessageCircleCodeIcon,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -634,35 +635,35 @@ export function SettingsPage() {
                             {t('settings.relatedDocs')}
                         </h3>
                         <ul className="space-y-3">
-                            <li className="flex items-center gap-3 text-xl">
-                                <BookOpenIcon className="size-4 text-muted-foreground" />
+                            <li className="flex items-center gap-3 text-xl group">
+                                <BookOpenIcon className="size-4 text-muted-foreground transition-colors duration-1200 group-hover:text-foreground" />
                                 <a
                                     href="https://rclone.org/flags/"
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-muted-foreground transition-colors hover:text-foreground"
+                                    className="text-muted-foreground transition-colors group-hover:text-foreground"
                                 >
                                     {t('settings.globalFlagsReference')}
                                 </a>
                             </li>
-                            <li className="flex items-center gap-3 text-xl">
-                                <BookOpenIcon className="size-4 text-muted-foreground" />
+                            <li className="flex items-center gap-3 text-xl group">
+                                <LightbulbIcon className="size-4 text-muted-foreground transition-colors duration-1200 group-hover:text-foreground" />
                                 <a
-                                    href="https://rclone.org/flags/#performance"
+                                    href="https://rcloneui.com/docs/cli/tips/dry-run"
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-muted-foreground transition-colors hover:text-foreground"
+                                    className="text-muted-foreground transition-colors group-hover:text-foreground"
                                 >
-                                    {t('settings.performanceTuning')}
+                                    {t('settings.tipsAndTricks')}
                                 </a>
                             </li>
-                            <li className="flex items-center gap-3 text-xl">
-                                <MessageCircleCodeIcon className="size-4 text-muted-foreground" />
+                            <li className="flex items-center gap-3 text-xl group">
+                                <MessageCircleCodeIcon className="size-4 text-muted-foreground transition-colors duration-1200 group-hover:text-foreground" />
                                 <a
                                     href="https://github.com/rclone/rclone-web"
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-muted-foreground transition-colors hover:text-foreground"
+                                    className="text-muted-foreground transition-colors group-hover:text-foreground"
                                 >
                                     {t('settings.openIssue')}
                                 </a>
